@@ -1,6 +1,5 @@
 # Correfoc
-This is my first WebGL project using Three.js. I want to make a little crowd of demons celebrating the correfoc, a Catalan and Valencian tradition, where folks dress up as demons and engage in a pyrotechnical spectacle. The goal is to make a couple demons holding an explosive pitchfork, and having the crowd follow them around the city.
-
+This is my first WebGL project using Three.js. I'm aiming to create a lively crowd of demons celebrating the Correfoc, a fiery Catalan and Valencian tradition where demons wield explosive pitchforks in a pyrotechnic parade. The plan is to animate a few mischievous demons leading the pack, pitchforks ablaze, and—just for fun—occasionally aiming them at people's feet.
 
 # Acknowledgements
-The 3D model of the cityt is based on "Low Poly City" (https://sketchfab.com/3d-models/low-poly-city-41697300a4c643d089784b8688b2ed2c) by Alessandro.Diamanti (https://sketchfab.com/diamanti.alessandro) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+The 3D model of the city is based on "Low Poly City" (https://sketchfab.com/3d-models/low-poly-city-41697300a4c643d089784b8688b2ed2c) by Alessandro.Diamanti (https://sketchfab.com/diamanti.alessandro) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
