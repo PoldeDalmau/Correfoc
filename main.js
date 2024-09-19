@@ -1,11 +1,16 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import * as YUKA from 'yuka';
 
-import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+// import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { MapControls } from 'three/addons/controls/MapControls.js';
 // import { FirstPersonControls } from 'three/addons/controls/FirstPersonControls.js';
 // import { PointerLockControls } from 'three/addons/controls/PointerLockControls.js';
 
-
+// max map: x = 80
+//          z = 25.2
+//          x = 37.5
+//          z = 103
 
 const scene = new THREE.Scene();
 
@@ -44,7 +49,9 @@ renderer.setAnimationLoop( animate );
 document.body.appendChild( renderer.domElement );
 
 // initialize controls
-const controls = new OrbitControls( camera, renderer.domElement );
+// const controls = new OrbitControls( camera, renderer.domElement );
+const controls = new MapControls( camera, renderer.domElement );
+controls.enableDamping = true;
 // const controls = new FirstPersonControls( camera, renderer.domElement );
 // const controls = new PointerLockControls( camera, renderer.domElement );
 
@@ -63,8 +70,37 @@ scene.add(blackCube)
 const redCubeGeometry = new THREE.BoxGeometry(1, 1, 1);
 const redCubeMaterial = new THREE.MeshLambertMaterial({ color: "red"});
 const redCube = new THREE.Mesh(redCubeGeometry, redCubeMaterial);
-redCube.position.set(47, 1, -30);  // set position different from black cube
+// redCube.position.set(47, 1, -30);  // set position different from black cube
+redCube.matrixAutoUpdate = false;
 scene.add(redCube)
+
+// use yuka to give our red cue sprite some intelligence
+const vehicle = new YUKA.Vehicle();
+
+vehicle.setRenderComponent(redCube, sync);
+
+function sync(entity, renderComponent) {
+    renderComponent.matrix.copy(entity.worldMatrix);
+}
+
+const path = new YUKA.Path();
+path.add(new YUKA.Vector3(48, 1, -30));
+path.add(new YUKA.Vector3(27, 1, -41));
+path.add(new YUKA.Vector3(30, 1, -69));
+path.add(new YUKA.Vector3(63, 1, -70));
+path.add(new YUKA.Vector3(66.5, 1, -24));
+
+path.loop = true;
+
+vehicle.position.copy(path.current());
+const followPathBehaviour = new YUKA.FollowPathBehavior(path, 0.5);
+vehicle.steering.add(followPathBehaviour);
+// vehicle.maxSpeed = 10;
+
+const entityManager = new YUKA.EntityManager();
+entityManager.add(vehicle);
+
+const time = new YUKA.Time();
 
 // Adding bounding box to our black box
 const blackCubeBB = new THREE.Box3(new THREE.Vector3(), new THREE.Vector3());
@@ -93,30 +129,35 @@ function checkCollision() {
         blackCube.material.color = new THREE.Color(0x000000);
     }
 }
-// Adding event listener to keyPressed event and changing position of red cube
-document.addEventListener("keydown", onDocumentKeyDown, false);
-function onDocumentKeyDown(event) {
-    var keyCode = event.which;
-    if (keyCode == 87) { // up
-        redCube.position.x -= .3;
-    } else if (keyCode == 83) { // down
-        redCube.position.x += .3;
-    } else if (keyCode == 65) { // left 
-        redCube.position.z += .3;
-    } else if (keyCode == 68) { // right
-        redCube.position.z -= .3;
-    }
-}
+// // Adding event listener to keyPressed event and changing position of red cube
+// document.addEventListener("keydown", onDocumentKeyDown, false);
+// function onDocumentKeyDown(event) {
+//     var keyCode = event.which;
+//     if (keyCode == 87) { // up
+//         redCube.position.x -= .3;
+//     } else if (keyCode == 83) { // down
+//         redCube.position.x += .3;
+//     } else if (keyCode == 65) { // left 
+//         redCube.position.z += .3;
+//     } else if (keyCode == 68) { // right
+//         redCube.position.z -= .3;
+//     }
+// }
 
 function animate() {
+    const delta = time.update().getDelta();
+    entityManager.update(delta);
     redCubeBB.setFromObject(redCube);
     checkCollision();
     controls.update();
     // requestAnimationFrame(animate);
     // PL_Z += 0.1;
-    
     renderer.render( scene, camera );
-    // console.log("cam XYZ: ", camera.position.x, camera.position.y, camera.position.z)
+    console.log("cam XYZ: ", camera.position.x, camera.position.y, camera.position.z)
+    // console.log("redCube XYZ: ", vehicle.position.x, vehicle.position.y, vehicle.position.z)
+    pointLight.position.copy(vehicle.position);
 }
 
 // animate();
+
+renderer.setAnimationLoop(animate);
