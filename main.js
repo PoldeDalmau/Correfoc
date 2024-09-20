@@ -4,6 +4,7 @@ import * as YUKA from 'yuka';
 
 // import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { MapControls } from 'three/addons/controls/MapControls.js';
+// import { color } from 'three/webgpu';
 // import { FirstPersonControls } from 'three/addons/controls/FirstPersonControls.js';
 // import { PointerLockControls } from 'three/addons/controls/PointerLockControls.js';
 
@@ -16,7 +17,8 @@ const scene = new THREE.Scene();
 
 // initialize camera with position
 const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
-camera.position.set( 75, 13, -37.5 );
+camera.position.set( 55, 9, -14 );
+
 
 // load city 3D model
 const loader = new GLTFLoader();
@@ -52,6 +54,7 @@ document.body.appendChild( renderer.domElement );
 // const controls = new OrbitControls( camera, renderer.domElement );
 const controls = new MapControls( camera, renderer.domElement );
 controls.enableDamping = true;
+controls.target.set(46, 1, -31);
 // const controls = new FirstPersonControls( camera, renderer.domElement );
 // const controls = new PointerLockControls( camera, renderer.domElement );
 
@@ -63,12 +66,13 @@ controls.enableDamping = true;
 const blackCubeGeometry = new THREE.BoxGeometry(1, 1, 1);
 const blackCubeMaterial = new THREE.MeshLambertMaterial({ color: "black"});
 const blackCube = new THREE.Mesh(blackCubeGeometry, blackCubeMaterial);
-blackCube.position.set(47, 1, -32);
+blackCube.position.set(47, 5, -32);
 scene.add(blackCube)
 
 // Red cube
 const redCubeGeometry = new THREE.BoxGeometry(1, 1, 1);
-const redCubeMaterial = new THREE.MeshLambertMaterial({ color: "red"});
+const redCubeMaterial = new THREE.MeshStandardMaterial({ color: "red", emissive: 'red', emissiveIntensity: 0.7});
+// redCubeMaterial.emissive;
 const redCube = new THREE.Mesh(redCubeGeometry, redCubeMaterial);
 // redCube.position.set(47, 1, -30);  // set position different from black cube
 redCube.matrixAutoUpdate = false;
@@ -84,16 +88,16 @@ function sync(entity, renderComponent) {
 }
 
 const path = new YUKA.Path();
-path.add(new YUKA.Vector3(48, 1, -30));
-path.add(new YUKA.Vector3(27, 1, -41));
-path.add(new YUKA.Vector3(30, 1, -69));
-path.add(new YUKA.Vector3(63, 1, -70));
-path.add(new YUKA.Vector3(66.5, 1, -24));
+path.add(new YUKA.Vector3(48, 5, -30));
+path.add(new YUKA.Vector3(27, 5, -41));
+path.add(new YUKA.Vector3(30, 5, -69));
+path.add(new YUKA.Vector3(63, 5, -70));
+path.add(new YUKA.Vector3(66.5, 5, -24));
 
 path.loop = true;
 
 vehicle.position.copy(path.current());
-const followPathBehaviour = new YUKA.FollowPathBehavior(path, 0.5);
+const followPathBehaviour = new YUKA.FollowPathBehavior(path, 1);
 vehicle.steering.add(followPathBehaviour);
 // vehicle.maxSpeed = 10;
 
@@ -147,15 +151,16 @@ function checkCollision() {
 function animate() {
     const delta = time.update().getDelta();
     entityManager.update(delta);
-    redCubeBB.setFromObject(redCube);
+    redCubeBB.setFromObject(redCube);;
     checkCollision();
     controls.update();
     // requestAnimationFrame(animate);
     // PL_Z += 0.1;
     renderer.render( scene, camera );
-    console.log("cam XYZ: ", camera.position.x, camera.position.y, camera.position.z)
+    // console.log("cam XYZ: ", camera.position.x, camera.position.y, camera.position.z)
     // console.log("redCube XYZ: ", vehicle.position.x, vehicle.position.y, vehicle.position.z)
-    pointLight.position.copy(vehicle.position);
+    pointLight.position.copy(vehicle.position); //.add(new THREE.Vector3(0,1,0));
+    // pointLight.intensity = 50 + 10 * Math.random();
 }
 
 // animate();
