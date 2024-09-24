@@ -61,20 +61,13 @@ controls.target.set(46, 1, -31);
 
 // controls.update();
 
-// make a sprite (cube)
-// black cube
-const blackCubeGeometry = new THREE.BoxGeometry(1, 1, 1);
-const blackCubeMaterial = new THREE.MeshLambertMaterial({ color: "black"});
-const blackCube = new THREE.Mesh(blackCubeGeometry, blackCubeMaterial);
-blackCube.position.set(47, 5, -32);
-scene.add(blackCube)
+
 
 // Red cube
 const redCubeGeometry = new THREE.BoxGeometry(1, 1, 1);
 const redCubeMaterial = new THREE.MeshStandardMaterial({ color: "red", emissive: 'red', emissiveIntensity: 0.7});
-// redCubeMaterial.emissive;
 const redCube = new THREE.Mesh(redCubeGeometry, redCubeMaterial);
-// redCube.position.set(47, 1, -30);  // set position different from black cube
+
 redCube.matrixAutoUpdate = false;
 scene.add(redCube)
 
@@ -99,16 +92,43 @@ path.loop = true;
 vehicle.position.copy(path.current());
 const followPathBehaviour = new YUKA.FollowPathBehavior(path, 1);
 vehicle.steering.add(followPathBehaviour);
-// vehicle.maxSpeed = 10;
+vehicle.maxSpeed = .5;
 
 const entityManager = new YUKA.EntityManager();
 entityManager.add(vehicle);
 
+// make a sprite (cube)
+// black cube
+
+for(let i = 0; i < 4; i ++){
+    
+    const seekBehavior = new YUKA.OffsetPursuitBehavior(vehicle, new YUKA.Vector3(Math.random() * 10 - 5, 0, Math.random() * 10 - 5));
+    let blackCubeGeometry = new THREE.BoxGeometry(1, 1, 1);
+    let blackCubeMaterial = new THREE.MeshLambertMaterial({ color: "white"});
+    let blackCube = new THREE.Mesh(blackCubeGeometry, blackCubeMaterial);
+    blackCube.position.set(47 - 5 + Math.random() * 10, 5, -32 - 5 + Math.random() * 10);
+    
+    let vehicleSeeker = new YUKA.Vehicle();
+    vehicleSeeker.steering.add(seekBehavior);
+    vehicleSeeker.position = blackCube.position;
+    blackCube.matrixAutoUpdate = false;
+    vehicleSeeker.maxSpeed = 20;
+    vehicleSeeker.maxForce = 100;
+    scene.add(blackCube)
+
+    vehicleSeeker.setRenderComponent(blackCube, sync);
+
+
+    entityManager.add(vehicleSeeker);
+
+    
+}
+
 const time = new YUKA.Time();
 
-// Adding bounding box to our black box
-const blackCubeBB = new THREE.Box3(new THREE.Vector3(), new THREE.Vector3());
-blackCubeBB.setFromObject(blackCube);
+// // Adding bounding box to our black box
+// const blackCubeBB = new THREE.Box3(new THREE.Vector3(), new THREE.Vector3());
+// blackCubeBB.setFromObject(blackCube);
 
 
 // Adding bounding box to our red box
@@ -122,17 +142,17 @@ pointLight.position.set( 47, PL_Z, -32 );
 // document.getElementById("play").onclick = ()=>{
 //     controls.lock();
 // }
-function checkCollision() {
-    if (redCubeBB.intersectsBox(blackCubeBB)) {
-        // console.log('test');
-        // blackCube.material.opacity = 0.5;
-        blackCube.material.color = new THREE.Color(0xffffff);
-    } else {
-        // blackCube.material.transparent = true;
-        // blackCube.material.opacity = 0.5;
-        blackCube.material.color = new THREE.Color(0x000000);
-    }
-}
+// function checkCollision() {
+//     if (redCubeBB.intersectsBox(blackCubeBB)) {
+//         // console.log('test');
+//         // blackCube.material.opacity = 0.5;
+//         blackCube.material.color = new THREE.Color(0xffffff);
+//     } else {
+//         // blackCube.material.transparent = true;
+//         // blackCube.material.opacity = 0.5;
+//         blackCube.material.color = new THREE.Color(0x000000);
+//     }
+// }
 // // Adding event listener to keyPressed event and changing position of red cube
 // document.addEventListener("keydown", onDocumentKeyDown, false);
 // function onDocumentKeyDown(event) {
@@ -152,7 +172,7 @@ function animate() {
     const delta = time.update().getDelta();
     entityManager.update(delta);
     redCubeBB.setFromObject(redCube);;
-    checkCollision();
+    // checkCollision();
     controls.update();
     // requestAnimationFrame(animate);
     // PL_Z += 0.1;
