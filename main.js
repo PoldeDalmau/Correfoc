@@ -61,8 +61,23 @@ controls.target.set(46, 1, -31);
 
 // controls.update();
 
+const entityManager = new YUKA.EntityManager();
 
+// town hall mesh for AI to know obstacle avoidance
+const townHallGeometry = new THREE.SphereGeometry(3);
+// const townHallGeometry = new THREE.BoxGeometry(22, 30, 22);
+townHallGeometry.computeBoundingSphere();
+const townHallMaterial = new THREE.MeshBasicMaterial();
+const townHall = new THREE.Mesh(townHallGeometry, townHallMaterial);
+// townHall.position.set(47, 1, -52);
+townHall.position.set(45, 5, -30);
+scene.add(townHall);
 
+const obstacleTH = new YUKA.GameEntity();
+obstacleTH.position.copy(townHall.position);
+obstacleTH.boundingRadius = townHallGeometry.boundingSphere.radius;
+entityManager.add(obstacleTH);
+const obstacleAvoidanceBehavior = new YUKA.ObstacleAvoidanceBehavior([obstacleTH]);
 // Red cube
 const redCubeGeometry = new THREE.BoxGeometry(1, 1, 1);
 const redCubeMaterial = new THREE.MeshStandardMaterial({ color: "red", emissive: 'red', emissiveIntensity: 0.7});
@@ -81,39 +96,48 @@ function sync(entity, renderComponent) {
 }
 
 const path = new YUKA.Path();
-path.add(new YUKA.Vector3(48, 5, -30));
-path.add(new YUKA.Vector3(27, 5, -41));
-path.add(new YUKA.Vector3(30, 5, -69));
-path.add(new YUKA.Vector3(63, 5, -70));
-path.add(new YUKA.Vector3(66.5, 5, -24));
+path.add(new YUKA.Vector3(30, 5, -30));
+path.add(new YUKA.Vector3(60, 5, -30));
+// path.add(new YUKA.Vector3(48, 5, -35));
+// path.add(new YUKA.Vector3(40, 5, -35));
+
+// path.add(new YUKA.Vector3(48, 5, -30));
+// path.add(new YUKA.Vector3(27, 5, -41));
+// path.add(new YUKA.Vector3(30, 5, -69));
+// path.add(new YUKA.Vector3(63, 5, -70));
+// path.add(new YUKA.Vector3(66.5, 5, -24));
 
 path.loop = true;
 
 vehicle.position.copy(path.current());
 const followPathBehaviour = new YUKA.FollowPathBehavior(path, 1);
 vehicle.steering.add(followPathBehaviour);
-vehicle.maxSpeed = 0.3;
+// vehicle.steering.add(obstacleAvoidanceBehavior);
+vehicle.maxSpeed = 3;
 
-const entityManager = new YUKA.EntityManager();
 entityManager.add(vehicle);
 
 // make a sprite (cube)
 // black cube
 
+// const seekBehavior = new YUKA.SeekBehavior(vehicle.position);
 for(let i = 0; i < 4; i ++){
-    const wanderBehavior = new YUKA.WanderBehavior();
-    const seekBehavior = new YUKA.OffsetPursuitBehavior(vehicle, new YUKA.Vector3(Math.random() * 10 - 5, 0, Math.random() * 10 - 5));
+    // const wanderBehavior = new YUKA.WanderBehavior();
+    // const wanderBehavior = new YUKA.WanderBehavior(10, .2);
+    const seekBehavior = new YUKA.OffsetPursuitBehavior(vehicle, new YUKA.Vector3(Math.random() * 3 - 1, 0, Math.random() * 3 - 1));
     let blackCubeGeometry = new THREE.BoxGeometry(1, 1, 1);
     let blackCubeMaterial = new THREE.MeshLambertMaterial({ color: "white"});
     let blackCube = new THREE.Mesh(blackCubeGeometry, blackCubeMaterial);
-    blackCube.position.set(47 - 5 + Math.random() * 10, 5, -32 - 5 + Math.random() * 10);
-    
+    blackCube.position.set(47 - 5 + Math.random() * 3, 5, -32 - 5 + Math.random() * 3);
+
     let vehicleSeeker = new YUKA.Vehicle();
+
+    vehicleSeeker.steering.add(obstacleAvoidanceBehavior);
     vehicleSeeker.steering.add(seekBehavior);
-    vehicleSeeker.steering.add(wanderBehavior);
+    // vehicleSeeker.steering.add(wanderBehavior);
     vehicleSeeker.position = blackCube.position;
     blackCube.matrixAutoUpdate = false;
-    vehicleSeeker.maxSpeed = 20;
+    vehicleSeeker.maxSpeed = 5;
     vehicleSeeker.maxForce = 100;
     scene.add(blackCube)
 
@@ -122,7 +146,7 @@ for(let i = 0; i < 4; i ++){
 
     entityManager.add(vehicleSeeker);
 
-    
+
 }
 
 const time = new YUKA.Time();
@@ -162,7 +186,7 @@ pointLight.position.set( 47, PL_Z, -32 );
 //         redCube.position.x -= .3;
 //     } else if (keyCode == 83) { // down
 //         redCube.position.x += .3;
-//     } else if (keyCode == 65) { // left 
+//     } else if (keyCode == 65) { // left
 //         redCube.position.z += .3;
 //     } else if (keyCode == 68) { // right
 //         redCube.position.z -= .3;
