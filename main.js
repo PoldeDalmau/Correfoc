@@ -92,7 +92,7 @@ path.loop = true;
 vehicle.position.copy(path.current());
 const followPathBehaviour = new YUKA.FollowPathBehavior(path, 1);
 vehicle.steering.add(followPathBehaviour);
-vehicle.maxSpeed = .5;
+vehicle.maxSpeed = 5;
 
 const entityManager = new YUKA.EntityManager();
 entityManager.add(vehicle);
@@ -101,7 +101,7 @@ entityManager.add(vehicle);
 // black cube
 
 for(let i = 0; i < 4; i ++){
-    
+    const wanderBehavior = new YUKA.WanderBehavior();
     const seekBehavior = new YUKA.OffsetPursuitBehavior(vehicle, new YUKA.Vector3(Math.random() * 10 - 5, 0, Math.random() * 10 - 5));
     let blackCubeGeometry = new THREE.BoxGeometry(1, 1, 1);
     let blackCubeMaterial = new THREE.MeshLambertMaterial({ color: "white"});
@@ -110,6 +110,7 @@ for(let i = 0; i < 4; i ++){
     
     let vehicleSeeker = new YUKA.Vehicle();
     vehicleSeeker.steering.add(seekBehavior);
+    vehicleSeeker.steering.add(wanderBehavior);
     vehicleSeeker.position = blackCube.position;
     blackCube.matrixAutoUpdate = false;
     vehicleSeeker.maxSpeed = 20;
