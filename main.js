@@ -4,6 +4,7 @@ import * as YUKA from 'yuka';
 import { createGraphHelper } from './src/graph_helper';
 import { createConvexRegionHelper } from './src/navmesh_helper';
 import { MapControls } from 'three/addons/controls/MapControls.js';
+// import { ThreeMFLoader } from 'three/examples/jsm/Addons.js';
 
 // max map: x = 80
 //          z = 25.2
@@ -19,11 +20,20 @@ camera.position.set( 69, 19, 8);
 
 const loaderdemon = new GLTFLoader();
 
-loaderdemon.load( './low_poly_city/Characters/demon/dimoni.gltf', function ( gltf ) {
-    const model = gltf.scene;
-    model.position.set(10.5, -2, 19.5);
+let mixer;
+loaderdemon.load( './low_poly_city/Characters/demon/dimoni_animated.glb', function ( glb ) {
+
+    const model = glb.scene;
+    model.position.set(53, -2, -15);
+    model.castShadow = true;
+    
     // model.position.set(10.5, -3, 19.5);
-	scene.add( gltf.scene );
+    mixer = new THREE.AnimationMixer(model);
+    const clips = glb.animations;
+    const clip = THREE.AnimationClip.findByName(clips, "Idle");
+    const action = mixer.clipAction(clip);
+    action.play();
+	scene.add( model );
 });
 // Red cube
 const redCubeGeometry = new THREE.BoxGeometry(1, 1, 1);
@@ -37,9 +47,9 @@ const path = new YUKA.Path();
 const followPathBehaviour = new YUKA.FollowPathBehavior(path);
 followPathBehaviour.active = false;
 // followPathBehaviour.nextWaypointDistance = 1;
-const onPathBehavior = new YUKA.OnPathBehavior();
-onPathBehavior.radius = 0.2;
-
+// const onPathBehavior = new YUKA.OnPathBehavior();
+// onPathBehavior.radius = 0.2;
+// const wanderBehavior = new YUKA.WanderBehavior(2, 3);
 // path.add(new YUKA.Vector3(48, 5, -35));
 path.add(new YUKA.Vector3(53, -2, -13));
 
@@ -52,9 +62,10 @@ const loader = new GLTFLoader();
 // loader.load( './LowPolyCityWithNavmesh.gltf', function ( gltf ) {
 loader.load( './low_poly_city/scene.gltf', function ( gltf ) {
     const model = gltf.scene;
+    model.receiveShadow = true;
     model.position.set(10.5, -2, 19.5);
     // model.position.set(10.5, -3, 19.5);
-	scene.add( gltf.scene );
+	scene.add( model );
 }, undefined, function ( error ) {
     console.log('Failed to load gltf model');
 	console.error( error );
@@ -67,7 +78,8 @@ vehicle.position.copy(path.current());
 vehicle.setRenderComponent(redCube, sync);
 
 vehicle.steering.add(followPathBehaviour);
-vehicle.steering.add(onPathBehavior);
+// vehicle.steering.add(wanderBehavior);
+// vehicle.steering.add(onPathBehavior);
 // vehicle.steering.add(obstacleAvoidanceBehavior);
 vehicle.maxSpeed = 2;
 // vehicle.maxForce = 200;
@@ -100,9 +112,9 @@ navmeshLoader.load('./low_poly_city/navmesh/testNavmeshglb.glb').then((navigatio
 
         if (intersects.length > 0){
             findPathTo(new YUKA.Vector3().copy(intersects[0].point));
-            console.log('added point to path');    
+            console.log('added point to path');
         } else {
-            console.log('try another point on the mesh');    
+            console.log('try another point on the mesh');
         }
     })
         function findPathTo(target){
@@ -113,12 +125,12 @@ navmeshLoader.load('./low_poly_city/navmesh/testNavmeshglb.glb').then((navigatio
             const followPathBehaviour = vehicle.steering.behaviors[0];
             followPathBehaviour.active = true;
             followPathBehaviour.path.clear();
-            onPathBehavior.path.clear();
+            // onPathBehavior.path.clear();
 
-            console.log('points added:', path.length);
+            // console.log('points added:', path.length);
             for (let point of path){
                 followPathBehaviour.path.add(point);
-                onPathBehavior.path.add(point);
+                // onPathBehavior.path.add(point);
             }
         }
 
@@ -137,7 +149,7 @@ scene.add( light );
 const directionalLight = new THREE.DirectionalLight( 0xffffff, 0.1 );
 scene.add( directionalLight );
 // point light
-const pointLight = new THREE.PointLight( 0xff0000, 100, 100 );
+const pointLight = new THREE.PointLight( 0xf83e3e, 100, 10, 3 );
 // pointLight.castShadow = true;
 // pointLight.position.set( 47, 0.5, -32 );
 scene.add( pointLight );
@@ -159,21 +171,13 @@ function sync(entity, renderComponent) {
 }
 
 const time = new YUKA.Time();
-
+const clock = new THREE.Clock();
 
 // Adding bounding box to our red box
 const redCubeBB = new THREE.Box3(new THREE.Vector3(), new THREE.Vector3());
 redCubeBB.setFromObject(redCube);
 
 function animate() {
-    // set new point:
-    // for(let i = 0; i < 4; i ++){
-    //     behaviorFLock[i] = new YUKA.OffsetPursuitBehavior(vehicle, new YUKA.Vector3(Math.random() * 3 - 1, 0, Math.random() * 3 - 1), 2);
-    //     // entityManager.entities.at(i + 1).;
-    // }
-
-
-
     const delta = time.update().getDelta();
     entityManager.update(delta);
     redCubeBB.setFromObject(redCube);;
@@ -181,17 +185,17 @@ function animate() {
     controls.update();
     // requestAnimationFrame(animate);
     // PL_Z += 0.1;
+    ;
     renderer.render( scene, camera );
     // console.log("cam XYZ: ", camera.position.x, camera.position.y, camera.position.z)
-    console.log("redCube XYZ: ", vehicle.position.x, vehicle.position.y, vehicle.position.z)
+    // console.log("redCube XYZ: ", vehicle.position.x, vehicle.position.y, vehicle.position.z)
     pointLight.position.copy(vehicle.position); //.add(new THREE.Vector3(0,1,0));
     // pointLight.intensity = 50 + 10 * Math.random();
 
-
-    let a = new YUKA.Vector3();
+    if(mixer!==undefined){
+        mixer.update(delta);
+    }
 
 }
-
-// animate();
 
 renderer.setAnimationLoop(animate);
