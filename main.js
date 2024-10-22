@@ -85,7 +85,7 @@ class World {
         // load city 3D model
         const loader = new GLTFLoader();
         // let model;
-        loader.load( './low_poly_city/scene.gltf', ( gltf ) => {
+        loader.load( './resources/low_poly_city/scene.gltf', ( gltf ) => {
             const model = gltf.scene;
             
             gltf.scene.traverse(o => {
@@ -107,7 +107,7 @@ class World {
     _LoadDemon() {
         const loaderdemon = new GLTFLoader();
 
-        loaderdemon.load( './low_poly_city/Characters/demon/dimoni_animated.glb', ( glb ) => {
+        loaderdemon.load( './resources/low_poly_city/Characters/demon/dimoni_animated.glb', ( glb ) => {
 
             glb.scene.position.set(53, -2, -15);
             glb.scene.traverse(o => {
@@ -141,7 +141,7 @@ class World {
     _LoadNavmesh() {
         // load navigation mesh
         const navmeshLoader = new YUKA.NavMeshLoader();
-        navmeshLoader.load('./low_poly_city/navmesh/testNavmeshglb.glb').then((navigationMesh) =>{
+        navmeshLoader.load('./resources/low_poly_city/navmesh/testNavmeshglb.glb').then((navigationMesh) =>{
             const navMesh = navigationMesh;
 
 
