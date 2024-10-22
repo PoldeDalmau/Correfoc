@@ -6,4 +6,6 @@ I have incorporated autonomous agents that can follow a path using [YUKA](https:
 # Acknowledgements
 The 3D model of the city is based on "Low Poly City" (https://sketchfab.com/3d-models/low-poly-city-41697300a4c643d089784b8688b2ed2c) by Alessandro.Diamanti (https://sketchfab.com/diamanti.alessandro) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/).
 
-A great resource to learn how to [make](https://www.youtube.com/watch?v=eBOcbYHexAM) Blender characters, [rig](https://www.youtube.com/watch?v=XkiWBSSuxLw) and [animate](https://www.youtube.com/watch?v=yjjLD3h3yRc) them is [Imphenzia](https://www.youtube.com/@Imphenzia).
+A great resource to learn how to [make](https://www.youtube.com/watch?v=eBOcbYHexAM), [rig](https://www.youtube.com/watch?v=XkiWBSSuxLw) and [animate](https://www.youtube.com/watch?v=yjjLD3h3yRc) Blender characters is [Imphenzia](https://www.youtube.com/@Imphenzia).
+
+It would have been impossible to give the characters the ability to move and link the animations to the movement without the [Three.js Tutorials for Beginners](https://www.youtube.com/playlist?list=PLRL3Z3lpLmH0aqLDbfh0ZmnDkpXPDnTau) playlist by [simondevyoutube](https://github.com/simondevyoutube).
