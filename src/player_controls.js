@@ -1,7 +1,7 @@
-import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.118/build/three.module.js';
-// import * as THREE from 'three';
-import {FBXLoader} from 'https://cdn.jsdelivr.net/npm/three@0.118.1/examples/jsm/loaders/FBXLoader.js';
-import {GLTFLoader} from 'https://cdn.jsdelivr.net/npm/three@0.118.1/examples/jsm/loaders/GLTFLoader.js';
+// import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.118/build/three.module.js';
+import * as THREE from 'three';
+// import {FBXLoader} from 'https://cdn.jsdelivr.net/npm/three@0.118.1/examples/jsm/loaders/FBXLoader.js';
+import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader'
 
 
 class BasicCharacterControllerProxy {
@@ -23,7 +23,7 @@ export default class BasicCharacterController {
   _Init(params) {
     this._params = params;
     this._decceleration = new THREE.Vector3(-0.0005, -0.0001, -5.0);
-    this._acceleration = new THREE.Vector3(1, 2.5, 50.0).multiplyScalar(0.1);
+    this._acceleration = new THREE.Vector3(1, 2.5, 100.0).multiplyScalar(0.1);
     this._velocity = new THREE.Vector3(0, 0, 0);
 
     this._animations = {};
@@ -36,14 +36,15 @@ export default class BasicCharacterController {
 
   _LoadModels() {
     const loader = new FBXLoader();
-    loader.setPath('./resources/zombie/');
-    loader.load('mremireh_o_desbiens.fbx', (fbx) => {
+    loader.setPath('./resources/demon/');
+    loader.load('dimoni.fbx', (fbx) => {
+    // loader.setPath('./resources/zombie/');
+    // loader.load('mremireh_o_desbiens.fbx', (fbx) => {
       fbx.traverse(c => {
         c.castShadow = true;
       });
       fbx.position.set(56, -2, -15);
       fbx.scale.setScalar(0.011);
-      console.log(fbx.position);
       this._target = fbx;
       this._params.scene.add(this._target);
 
@@ -65,11 +66,11 @@ export default class BasicCharacterController {
       };
 
       const loader = new FBXLoader(this._manager);
-      loader.setPath('./resources/zombie/');
-      loader.load('walk.fbx', (a) => { _OnLoad('walk', a); });
+      loader.setPath('./resources/demon/');
+      loader.load('walking.fbx', (a) => { _OnLoad('walk', a); });
       loader.load('run.fbx', (a) => { _OnLoad('run', a); });
       loader.load('idle.fbx', (a) => { _OnLoad('idle', a); });
-      loader.load('dance.fbx', (a) => { _OnLoad('dance', a); });
+      loader.load('stomp.fbx', (a) => { _OnLoad('dance', a); });
     });
   }
 
@@ -102,9 +103,9 @@ export default class BasicCharacterController {
       acc.multiplyScalar(2.0);
     }
 
-    if (this._stateMachine._currentState.Name == 'dance') {
-      acc.multiplyScalar(0.0);
-    }
+    // if (this._stateMachine._currentState.Name == 'dance') {
+    //   acc.multiplyScalar(0.0);
+    // }
 
     if (this._input._keys.forward) {
       velocity.z += acc.z * timeInSeconds;
